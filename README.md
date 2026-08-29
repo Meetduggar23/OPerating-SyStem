@@ -1,6 +1,12 @@
-# AI Operating System
+<p align="center">
+  <img src="public/logo.png" alt="AI Operating System Logo" width="150">
+</p>
 
-A browser-based AI Operating System built with React, TypeScript, Electron, and SQLite.
+<h1 align="center">AI Operating System</h1>
+
+<p align="center">
+  A browser-based AI Operating System built with React, TypeScript, Electron, and SQLite.
+</p>
 
 ## Features
 
