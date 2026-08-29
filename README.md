@@ -28,40 +28,6 @@
 - **Notifications** - Toast notification system
 - **Dark/Light Theme** - Customizable appearance with accent colors
 
-## Tech Stack
-
-- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS
-- **Desktop**: Electron 28
-- **State**: Zustand
-- **Icons**: Lucide React
-- **Database**: SQLite (better-sqlite3)
-- **AI**: Ollama (optional)
-
-## Project Structure
-
-```
-ai-operating-system/
-├── frontend/          # React frontend
-│   ├── src/
-│   │   ├── apps/      # Application components
-│   │   ├── components/# UI components
-│   │   ├── stores/    # Zustand stores
-│   │   ├── hooks/     # Custom hooks
-│   │   ├── styles/    # Global styles
-│   │   └── types/     # TypeScript types
-│   └── package.json
-├── electron/          # Electron main process
-│   ├── main/
-│   │   ├── main.ts    # Main process entry
-│   │   ├── preload.ts # Preload script
-│   │   └── ipc/       # IPC handlers
-│   └── package.json
-├── database/          # SQLite schema and migrations
-├── shared/            # Shared types and utilities
-├── public/            # Static assets (logo.png)
-└── package.json       # Root package.json
-```
-
 ## Installation
 
 ```bash
@@ -97,18 +63,6 @@ npm run build:electron
 
 # Build everything
 npm run build
-```
-
-## Database
-
-The application uses SQLite for persistent storage. On first run:
-
-```bash
-# Run migrations
-npm run db:migrate
-
-# Seed with sample data
-npm run db:seed
 ```
 
 ## AI Assistant (Ollama)
@@ -149,6 +103,4 @@ OLLAMA_DEFAULT_MODEL=llama3
 - Validated IPC inputs
 - Safe filesystem operations
 
-## License
-
-MIT
+## Made By Meet Duggar 
