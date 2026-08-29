@@ -1,0 +1,53 @@
+{
+  "name": "ai-os-electron",
+  "version": "1.0.0",
+  "main": "main/main.js",
+  "scripts": {
+    "dev": "tsc && electron .",
+    "build": "tsc && electron-builder",
+    "start": "electron .",
+    "db:migrate": "ts-node main/database/migrate.ts",
+    "db:seed": "ts-node main/database/seed.ts"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "typescript": "^5.3.3",
+    "electron-builder": "^24.9.1",
+    "cross-env": "^7.0.3",
+    "ts-node": "^10.9.2",
+    "electron": "^28.0.0"
+  },
+  "build": {
+    "appId": "com.aios.desktop",
+    "productName": "AI Operating System",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main/**/*",
+      "preload/**/*",
+      "../frontend/dist/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "../database",
+        "to": "database"
+      }
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "../public/logo.png"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "../public/logo.png"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "../public/logo.png"
+    }
+  }
+}

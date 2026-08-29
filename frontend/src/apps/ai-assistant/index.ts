@@ -1,0 +1,1 @@
+export { AIAssistantApp } from './AIAssistantApp';

@@ -1,0 +1,35 @@
+{
+  "name": "ai-operating-system",
+  "version": "1.0.0",
+  "description": "Browser-based AI Operating System",
+  "main": "electron/main/main.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:electron\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:electron": "cd electron && npm run dev",
+    "build": "npm run build:frontend && npm run build:electron",
+    "build:frontend": "cd frontend && npm run build",
+    "build:electron": "cd electron && npm run build",
+    "preview": "cd frontend && npm run preview",
+    "lint": "cd frontend && npm run lint",
+    "typecheck": "cd frontend && npm run typecheck",
+    "test": "cd frontend && npm run test",
+    "test:e2e": "cd frontend && npm run test:e2e",
+    "db:migrate": "cd electron && npm run db:migrate",
+    "db:seed": "cd electron && npm run db:seed",
+    "postinstall": "npm run install:all",
+    "install:all": "cd frontend && npm install && cd ../electron && npm install"
+  },
+  "keywords": [
+    "ai",
+    "operating-system",
+    "electron",
+    "react",
+    "typescript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
