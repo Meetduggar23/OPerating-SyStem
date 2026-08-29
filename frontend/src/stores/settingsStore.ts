@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Settings, AppearanceSettings } from '@shared/types';
+import type { Settings, AppearanceSettings } from '@/types';
 
 const defaultAppearance: AppearanceSettings = {
   theme: 'system',
@@ -60,7 +60,7 @@ interface SettingsState {
 
 export const useSettingsStore = create<SettingsState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       settings: defaultSettings,
       updateSettings: (partial) =>
         set((state) => ({

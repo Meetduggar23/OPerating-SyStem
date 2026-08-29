@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Cpu, HardDrive, MemoryStick, Activity, Zap, Clock, RefreshCw } from 'lucide-react';
-import { cn, formatBytes, formatDuration } from '@shared/utils';
+import { Cpu, HardDrive, MemoryStick, Clock } from 'lucide-react';
+import { cn, formatBytes, formatDuration } from '@/utils';
 
 interface SystemMonitorAppProps {
   windowId: string;
@@ -14,7 +14,7 @@ interface SystemData {
   processes: { name: string; cpu: number; memory: number; pid: number }[];
 }
 
-export function SystemMonitorApp({ windowId }: SystemMonitorAppProps) {
+export function SystemMonitorApp({ windowId: _windowId }: SystemMonitorAppProps) {
   const [data, setData] = useState<SystemData>({
     cpu: 0, memory: { total: 8 * 1024 * 1024 * 1024, used: 0, free: 8 * 1024 * 1024 * 1024 },
     disk: { total: 256 * 1024 * 1024 * 1024, used: 0, free: 256 * 1024 * 1024 * 1024 },

@@ -1,13 +1,13 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Folder, File, ArrowLeft, ArrowRight, ArrowUp, ChevronRight,
   Search, LayoutGrid, List, Plus, Trash2, Copy, Clipboard,
   FolderPlus, FileText, Edit3, RefreshCw, Home, Download,
-  Image, Music, Video, Star, Clock, MoreVertical, X, Check
+  Image, Music, Video
 } from 'lucide-react';
-import { cn, formatBytes, formatRelativeTime, getFileExtension } from '@shared/utils';
+import { cn, formatBytes, formatRelativeTime, getFileExtension } from '@/utils';
 import { notify } from '@/stores/notificationStore';
-import type { FileSystemEntry } from '@shared/types';
+import type { FileSystemEntry } from '@/types';
 
 interface FileManagerAppProps {
   windowId: string;
@@ -51,14 +51,14 @@ function getFileIconComponent(entry: FileSystemEntry) {
   return FILE_ICONS[ext] || File;
 }
 
-export function FileManagerApp({ windowId }: FileManagerAppProps) {
+export function FileManagerApp({ windowId: _windowId }: FileManagerAppProps) {
   const [currentPath, setCurrentPath] = useState('~');
   const [entries, setEntries] = useState<FileSystemEntry[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'name' | 'size' | 'modified' | 'type'>('name');
-  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [sortBy, _setSortBy] = useState<'name' | 'size' | 'modified' | 'type'>('name');
+  const [sortDir, _setSortDir] = useState<'asc' | 'desc'>('asc');
   const [history, setHistory] = useState<string[]>(['~']);
   const [historyIndex, setHistoryIndex] = useState(0);
   const [loading, setLoading] = useState(false);

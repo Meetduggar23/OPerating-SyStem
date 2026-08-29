@@ -1,8 +1,8 @@
-import { useState, useCallback, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Plus, Clock, MapPin, Trash2, Edit3, X, Calendar as CalendarIcon } from 'lucide-react';
-import { cn, formatRelativeTime } from '@shared/utils';
-import { generateId } from '@shared/constants';
-import type { CalendarEvent } from '@shared/types';
+import { useState } from 'react';
+import { ChevronLeft, ChevronRight, Plus, Clock, Trash2, Edit3, X, Calendar as CalendarIcon } from 'lucide-react';
+import { cn } from '@/utils';
+import { generateId } from '@/utils';
+import type { CalendarEvent } from '@/types';
 
 interface CalendarAppProps {
   windowId: string;
@@ -20,7 +20,7 @@ function getFirstDayOfMonth(year: number, month: number) {
   return new Date(year, month, 1).getDay();
 }
 
-export function CalendarApp({ windowId }: CalendarAppProps) {
+export function CalendarApp({ windowId: _windowId }: CalendarAppProps) {
   const [view, setView] = useState<'month' | 'week' | 'day'>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());

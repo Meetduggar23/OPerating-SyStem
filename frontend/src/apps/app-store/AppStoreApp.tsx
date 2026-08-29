@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Search, Download, Check, ExternalLink, Star, Clock, Users, Tag } from 'lucide-react';
-import { cn } from '@shared/utils';
+import { Search } from 'lucide-react';
+import { cn } from '@/utils';
 import { useAppStore } from '@/stores/appStore';
 import { useNotificationStore } from '@/stores/notificationStore';
-import type { AppMetadata, AppCategory } from '@shared/types';
+import type { AppMetadata, AppCategory } from '@/types';
 
 interface AppStoreAppProps {
   windowId: string;
@@ -18,7 +18,7 @@ const CATEGORIES: { id: AppCategory | 'all'; label: string }[] = [
   { id: 'ai', label: 'AI' },
 ];
 
-export function AppStoreApp({ windowId }: AppStoreAppProps) {
+export function AppStoreApp({ windowId: _windowId }: AppStoreAppProps) {
   const { apps, installApp, uninstallApp } = useAppStore();
   const { addNotification } = useNotificationStore();
   const [searchQuery, setSearchQuery] = useState('');

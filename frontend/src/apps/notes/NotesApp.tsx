@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Plus, Search, Pin, Star, Trash2, Tag, Check, X, Clock, FileText } from 'lucide-react';
-import { cn, formatRelativeTime } from '@shared/utils';
+import { Plus, Search, Pin, Star, Trash2, X, FileText } from 'lucide-react';
+import { cn, formatRelativeTime } from '@/utils';
 import { useWindowStore } from '@/stores/windowStore';
 import { useNotificationStore } from '@/stores/notificationStore';
-import { generateId } from '@shared/constants';
-import type { Note } from '@shared/types';
+import { generateId } from '@/utils';
+import type { Note } from '@/types';
 
 interface NotesAppProps {
   windowId: string;

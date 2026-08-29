@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, createContext, useContext, ReactNode, useCallback } from 'react';
-import { cn } from '@shared/utils';
+import { useEffect, useRef, useState, createContext, ReactNode, useCallback } from 'react';
+import { cn } from '@/utils';
 
 interface ContextMenuItem {
-  label: string;
+  label?: string;
   icon?: React.ComponentType<{ className?: string }> | React.ReactNode;
   onClick?: () => void;
   shortcut?: string;
@@ -61,7 +61,7 @@ export function ContextMenuProvider({ children }: { children: ReactNode }) {
   );
 }
 
-function ContextMenuRoot({ id, x, y, items, onClose }: { id: string; x: number; y: number; items: ContextMenuItem[]; onClose: () => void }) {
+function ContextMenuRoot({ id: _id, x, y, items, onClose }: { id: string; x: number; y: number; items: ContextMenuItem[]; onClose: () => void }) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [focusedIndex, setFocusedIndex] = useState(-1);
 

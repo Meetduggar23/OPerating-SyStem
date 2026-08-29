@@ -1,6 +1,7 @@
+import { useState, useEffect } from 'react';
 import { useWindowStore } from '@/stores/windowStore';
 import { Window } from './Window';
-import type { WindowState } from '@shared/types';
+import type { WindowState } from '@/types';
 
 interface WindowProviderProps {
   children: React.ReactNode;
@@ -8,26 +9,20 @@ interface WindowProviderProps {
 
 export function WindowProvider({ children }: WindowProviderProps) {
   const windows = useWindowStore((state) => Array.from(state.windows.values()));
-  const focusedWindow = useWindowStore((state) => {
-    for (const w of state.windows.values()) {
-      if (w.isFocused) return w;
-    }
-    return undefined;
-  });
 
   const sortedWindows = [...windows].sort((a, b) => a.zIndex - b.zIndex);
 
   return (
     <div className="fixed inset-0 pointer-events-none" id="window-layer">
       {sortedWindows.map((windowState) => (
-        <WindowWrapper key={windowState.id} windowState={windowState} isFocused={focusedWindow?.id === windowState.id} />
+        <WindowWrapper key={windowState.id} windowState={windowState} />
       ))}
       {children}
     </div>
   );
 }
 
-function WindowWrapper({ windowState, isFocused }: { windowState: WindowState; isFocused: boolean }) {
+function WindowWrapper({ windowState }: { windowState: WindowState }) {
   return (
     <Window
       id={windowState.id}
@@ -88,7 +83,7 @@ function AppRenderer({ appId, windowId }: { appId: string; windowId: string }) {
     setError(null);
     renderApp()
       .then((Component) => {
-        setAppComponent(Component.default || Component);
+        setAppComponent(() => Component as React.ComponentType<{ windowId: string }>);
         setLoading(false);
       })
       .catch((err) => {

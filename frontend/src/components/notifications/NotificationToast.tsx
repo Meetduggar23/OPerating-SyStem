@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
-import { cn } from '@shared/utils';
+import { cn } from '@/utils';
 import { useNotificationStore } from '@/stores/notificationStore';
-import type { Notification } from '@shared/types';
+import type { Notification } from '@/types';
 
 const ICONS = {
   success: CheckCircle,

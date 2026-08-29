@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { DesktopIcon } from '@shared/types';
-import { DESKTOP_ICON_SIZE, DESKTOP_GRID_SIZE } from '@shared/constants';
+import type { DesktopIcon } from '@/types';
+import { DESKTOP_ICON_SIZE, DESKTOP_GRID_SIZE } from '@/constants';
 
 interface DesktopState {
   icons: DesktopIcon[];
@@ -15,18 +15,18 @@ interface DesktopState {
   getNextIconPosition: () => { x: number; y: number };
 }
 
-const defaultIcons: Omit<DesktopIcon, 'id' | 'order'>[] = [
-  { appId: 'file-manager', name: 'File Manager', icon: 'folder', x: 24, y: 24 },
-  { appId: 'terminal', name: 'Terminal', icon: 'terminal', x: 24, y: 128 },
-  { appId: 'notes', name: 'Notes', icon: 'file-text', x: 24, y: 232 },
-  { appId: 'calculator', name: 'Calculator', icon: 'calculator', x: 24, y: 336 },
-  { appId: 'settings', name: 'Settings', icon: 'settings', x: 24, y: 440 },
+const defaultIcons: DesktopIcon[] = [
+  { id: 'icon-1', appId: 'file-manager', name: 'File Manager', icon: 'folder', x: 24, y: 24, order: 0 },
+  { id: 'icon-2', appId: 'terminal', name: 'Terminal', icon: 'terminal', x: 24, y: 128, order: 1 },
+  { id: 'icon-3', appId: 'notes', name: 'Notes', icon: 'file-text', x: 24, y: 232, order: 2 },
+  { id: 'icon-4', appId: 'calculator', name: 'Calculator', icon: 'calculator', x: 24, y: 336, order: 3 },
+  { id: 'icon-5', appId: 'settings', name: 'Settings', icon: 'settings', x: 24, y: 440, order: 4 },
 ];
 
 export const useDesktopStore = create<DesktopState>()(
   persist(
     (set, get) => ({
-      icons: [],
+      icons: defaultIcons,
       wallpaper: '',
 
       addIcon: (icon) => {

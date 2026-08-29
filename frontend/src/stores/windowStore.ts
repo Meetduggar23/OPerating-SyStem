@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { WindowState, AppMetadata } from '@shared/types';
-import { DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT } from '@shared/constants';
+import type { WindowState, AppMetadata } from '@/types';
+import { DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT } from '@/constants';
 
 interface WindowStoreState {
   windows: Map<string, WindowState>;
@@ -203,15 +203,21 @@ export const useWindowStore = create<WindowStoreState>()(
     {
       name: 'ai-os-window-states',
       version: 1,
-      serialize: (state) => JSON.stringify({
-        windows: Array.from(state.windows.entries()),
-        zIndexCounter: state.zIndexCounter,
-      }),
+      serialize: (state) => {
+        const stateData = state.state as unknown as { windows: Map<string, WindowState>; zIndexCounter: number };
+        return JSON.stringify({
+          windows: Array.from(stateData.windows.entries()),
+          zIndexCounter: stateData.zIndexCounter,
+        });
+      },
       deserialize: (str) => {
         const parsed = JSON.parse(str);
         return {
-          windows: new Map(parsed.windows),
-          zIndexCounter: parsed.zIndexCounter,
+          state: {
+            windows: new Map(parsed.windows),
+            zIndexCounter: parsed.zIndexCounter,
+          },
+          version: 1,
         };
       },
     }

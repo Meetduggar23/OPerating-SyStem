@@ -1,62 +1,57 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useWindowStore } from '@/stores/windowStore';
 import { useAppStore } from '@/stores/appStore';
-import type { WindowState, AppMetadata } from '@shared/types';
 
 export function useWindow(windowId: string) {
-  const {
-    windows,
-    focusWindow,
-    closeWindow,
-    minimizeWindow,
-    maximizeWindow,
-    restoreWindow,
-    moveWindow,
-    resizeWindow,
-    setWindowTitle,
-    bringToFront,
-    sendToBack,
-  } = useWindowStore();
-
-  const window = windows.get(windowId);
+  const windowState = useWindowStore((state) => state.windows.get(windowId));
+  const focus = useWindowStore((state) => state.focusWindow);
+  const close = useWindowStore((state) => state.closeWindow);
+  const minimize = useWindowStore((state) => state.minimizeWindow);
+  const maximize = useWindowStore((state) => state.maximizeWindow);
+  const restore = useWindowStore((state) => state.restoreWindow);
+  const move = useWindowStore((state) => state.moveWindow);
+  const resize = useWindowStore((state) => state.resizeWindow);
+  const setWindowTitle = useWindowStore((state) => state.setWindowTitle);
+  const bringToFront = useWindowStore((state) => state.bringToFront);
+  const sendToBack = useWindowStore((state) => state.sendToBack);
 
   return {
-    window,
-    focus: useCallback(() => focusWindow(windowId), [focusWindow, windowId]),
-    close: useCallback(() => closeWindow(windowId), [closeWindow, windowId]),
-    minimize: useCallback(() => minimizeWindow(windowId), [minimizeWindow, windowId]),
-    maximize: useCallback(() => maximizeWindow(windowId), [maximizeWindow, windowId]),
-    restore: useCallback(() => restoreWindow(windowId), [restoreWindow, windowId]),
-    move: useCallback((x: number, y: number) => moveWindow(windowId, x, y), [moveWindow, windowId]),
-    resize: useCallback((width: number, height: number) => resizeWindow(windowId, width, height), [resizeWindow, windowId]),
+    window: windowState,
+    focus: useCallback(() => focus(windowId), [focus, windowId]),
+    close: useCallback(() => close(windowId), [close, windowId]),
+    minimize: useCallback(() => minimize(windowId), [minimize, windowId]),
+    maximize: useCallback(() => maximize(windowId), [maximize, windowId]),
+    restore: useCallback(() => restore(windowId), [restore, windowId]),
+    move: useCallback((x: number, y: number) => move(windowId, x, y), [move, windowId]),
+    resize: useCallback((width: number, height: number) => resize(windowId, width, height), [resize, windowId]),
     setTitle: useCallback((title: string) => setWindowTitle(windowId, title), [setWindowTitle, windowId]),
     bringToFront: useCallback(() => bringToFront(windowId), [bringToFront, windowId]),
     sendToBack: useCallback(() => sendToBack(windowId), [sendToBack, windowId]),
-    isFocused: window?.isFocused ?? false,
-    isMinimized: window?.isMinimized ?? false,
-    isMaximized: window?.isMaximized ?? false,
+    isFocused: windowState?.isFocused ?? false,
+    isMinimized: windowState?.isMinimized ?? false,
+    isMaximized: windowState?.isMaximized ?? false,
   };
 }
 
 export function useWindowManager() {
-  const { openWindow, getWindowsByApp, closeAllWindows } = useWindowStore();
-  const { getApp, launchApp } = useAppStore();
+  const openWindow = useWindowStore((state) => state.openWindow);
+  const getWindowsByApp = useWindowStore((state) => state.getWindowsByApp);
+  const closeAllWindows = useWindowStore((state) => state.closeAllWindows);
+  const getApp = useAppStore((state) => state.getApp);
+  const launchApp = useAppStore((state) => state.launchApp);
 
   const openApp = useCallback(
-    (appId: string, options?: Partial<WindowState>) => {
+    (appId: string) => {
       const app = getApp(appId);
       if (!app) return null;
-
       launchApp(appId);
-      return openWindow(app, options);
+      return openWindow(app);
     },
     [getApp, launchApp, openWindow]
   );
 
   const closeApp = useCallback(
-    (appId: string) => {
-      closeAllWindows(appId);
-    },
+    (appId: string) => closeAllWindows(appId),
     [closeAllWindows]
   );
 
@@ -70,36 +65,17 @@ export function useWindowManager() {
     [getWindowsByApp]
   );
 
-  const getOrCreateWindow = useCallback(
-    (appId: string, options?: Partial<WindowState>) => {
-      const existing = getWindowsByApp(appId);
-      if (existing.length > 0) {
-        const window = existing[0];
-        useWindowStore.getState().focusWindow(window.id);
-        if (window.isMinimized) useWindowStore.getState().restoreWindow(window.id);
-        return window.id;
-      }
-      return openApp(appId, options);
-    },
-    [getWindowsByApp, openApp]
-  );
-
-  return {
-    openApp,
-    closeApp,
-    getAppWindows,
-    isAppRunning,
-    getOrCreateWindow,
-  };
+  return { openApp, closeApp, getAppWindows, isAppRunning };
 }
 
 export function useDragWindow(windowId: string, handleRef: React.RefObject<HTMLElement>) {
-  const { window, move, isMaximized } = useWindow(windowId);
+  const windowState = useWindowStore((state) => state.windows.get(windowId));
+  const move = useWindowStore((state) => state.moveWindow);
   const dragRef = useRef<{ x: number; y: number; windowX: number; windowY: number } | null>(null);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if (isMaximized) return;
+      if (windowState?.isMaximized) return;
       if (e.button !== 0) return;
 
       const handle = handleRef.current;
@@ -108,23 +84,21 @@ export function useDragWindow(windowId: string, handleRef: React.RefObject<HTMLE
       dragRef.current = {
         x: e.clientX,
         y: e.clientY,
-        windowX: window?.x ?? 0,
-        windowY: window?.y ?? 0,
+        windowX: windowState?.x ?? 0,
+        windowY: windowState?.y ?? 0,
       };
 
       e.preventDefault();
     },
-    [handleRef, isMaximized, window]
+    [handleRef, windowState?.isMaximized, windowState?.x, windowState?.y]
   );
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!dragRef.current) return;
-
       const dx = e.clientX - dragRef.current.x;
       const dy = e.clientY - dragRef.current.y;
-
-      move(dragRef.current.windowX + dx, dragRef.current.windowY + dy);
+      move(windowId, dragRef.current.windowX + dx, dragRef.current.windowY + dy);
     };
 
     const handleMouseUp = () => {
@@ -133,45 +107,43 @@ export function useDragWindow(windowId: string, handleRef: React.RefObject<HTMLE
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [move]);
+  }, [move, windowId]);
 
   return { onMouseDown: handleMouseDown };
 }
 
 export function useResizeWindow(windowId: string, direction: 'se' | 's' | 'e' | 'sw' | 'w' | 'nw' | 'n' | 'ne') {
-  const { window, resize, isMaximized } = useWindow(windowId);
+  const windowState = useWindowStore((state) => state.windows.get(windowId));
+  const resize = useWindowStore((state) => state.resizeWindow);
   const dragRef = useRef<{ x: number; y: number; width: number; height: number } | null>(null);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if (isMaximized) return;
+      if (windowState?.isMaximized) return;
       if (e.button !== 0) return;
 
       dragRef.current = {
         x: e.clientX,
         y: e.clientY,
-        width: window?.width ?? 0,
-        height: window?.height ?? 0,
+        width: windowState?.width ?? 0,
+        height: windowState?.height ?? 0,
       };
 
       e.preventDefault();
       e.stopPropagation();
     },
-    [isMaximized, window]
+    [windowState?.isMaximized, windowState?.width, windowState?.height]
   );
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!dragRef.current || !window) return;
-
+      if (!dragRef.current || !windowState) return;
       const dx = e.clientX - dragRef.current.x;
       const dy = e.clientY - dragRef.current.y;
-
       let newWidth = dragRef.current.width;
       let newHeight = dragRef.current.height;
 
@@ -180,7 +152,7 @@ export function useResizeWindow(windowId: string, direction: 'se' | 's' | 'e' | 
       if (direction.includes('s')) newHeight = dragRef.current.height + dy;
       if (direction.includes('n')) newHeight = dragRef.current.height - dy;
 
-      resize(newWidth, newHeight);
+      resize(windowId, newWidth, newHeight);
     };
 
     const handleMouseUp = () => {
@@ -189,26 +161,19 @@ export function useResizeWindow(windowId: string, direction: 'se' | 's' | 'e' | 
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
-
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [resize, window, direction]);
+  }, [resize, windowId, windowState, direction]);
 
   const cursors: Record<string, string> = {
-    se: 'se-resize',
-    sw: 'sw-resize',
-    ne: 'ne-resize',
-    nw: 'nw-resize',
-    s: 's-resize',
-    n: 'n-resize',
-    e: 'e-resize',
-    w: 'w-resize',
+    se: 'se-resize', sw: 'sw-resize', ne: 'ne-resize', nw: 'nw-resize',
+    s: 's-resize', n: 'n-resize', e: 'e-resize', w: 'w-resize',
   };
 
   return {
     onMouseDown: handleMouseDown,
-    style: { cursor: cursors[direction] },
+    style: { cursor: cursors[direction] } as React.CSSProperties,
   };
 }

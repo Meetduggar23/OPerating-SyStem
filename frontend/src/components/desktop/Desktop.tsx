@@ -1,14 +1,12 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
-import { Folder, FileText, Terminal, Settings, Calculator, Calendar, CheckSquare, Store, Bot, Activity, Info, RefreshCw, Monitor } from 'lucide-react';
-import { cn } from '@shared/utils';
+import { useRef, useState, useCallback } from 'react';
+import { Folder, FileText, Terminal, Settings, Calculator, Calendar, CheckSquare, Store, Bot, Activity, Info, Monitor } from 'lucide-react';
+import { cn } from '@/utils';
 import { useDesktopStore } from '@/stores/desktopStore';
 import { useWindowStore } from '@/stores/windowStore';
 import { useAppStore } from '@/stores/appStore';
 import { useNotificationStore } from '@/stores/notificationStore';
-import { ContextMenu } from '@/components/common/ContextMenu';
-import { getFileIcon } from '@shared/utils';
-import { DESKTOP_ICON_SIZE, DESKTOP_GRID_SIZE } from '@shared/constants';
-import type { DesktopIcon, AppMetadata } from '@shared/types';
+import { DESKTOP_GRID_SIZE } from '@/constants';
+import type { DesktopIcon } from '@/types';
 
 const APP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
   folder: Folder,
@@ -35,7 +33,7 @@ function DesktopIconComponent({ icon, name, position, selected, onClick, onDoubl
   name: string;
   position: { x: number; y: number };
   selected: boolean;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent) => void;
   onDoubleClick: () => void;
   onContextMenu: (e: React.MouseEvent) => void;
   onDragStart: (e: React.DragEvent) => void;
@@ -45,16 +43,12 @@ function DesktopIconComponent({ icon, name, position, selected, onClick, onDoubl
   return (
     <div
       className={cn(
-        'flex flex-col items-center cursor-pointer select-none transition-all duration-150',
+        'absolute flex flex-col items-center cursor-pointer select-none transition-all duration-150',
         'w-[80px] h-[96px]',
         selected && 'bg-primary/10 rounded-lg',
         'hover:bg-surface-hover rounded-lg'
       )}
-      style={{
-        left: position.x,
-        top: position.y,
-        transform: `translate(${position.x}px, ${position.y}px)`,
-      } as React.CSSProperties}
+      style={{ left: position.x, top: position.y } as React.CSSProperties}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
       onContextMenu={onContextMenu}
@@ -77,7 +71,7 @@ function DesktopIconComponent({ icon, name, position, selected, onClick, onDoubl
 }
 
 export function Desktop() {
-  const { icons, wallpaper, updateIconPosition, reorderIcons, getNextIconPosition } = useDesktopStore();
+  const { icons, wallpaper, updateIconPosition } = useDesktopStore();
   const { openWindow } = useWindowStore();
   const { getApp, launchApp } = useAppStore();
   const { addNotification } = useNotificationStore();
@@ -153,7 +147,8 @@ export function Desktop() {
   const handleDesktopContextMenu = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     setSelectedIcons(new Set());
-  }, []);
+    addNotification({ type: 'info', title: 'Context Menu', message: 'Right-click menu coming soon', duration: 2000 });
+  }, [addNotification]);
 
   return (
     <div
@@ -178,7 +173,7 @@ export function Desktop() {
             name={icon.name}
             position={{ x: icon.x, y: icon.y }}
             selected={selectedIcons.has(icon.id)}
-            onClick={() => handleIconClick(icon.id, { shiftKey: false, metaKey: false, ctrlKey: false } as React.MouseEvent)}
+            onClick={(e) => handleIconClick(icon.id, e)}
             onDoubleClick={() => handleIconDoubleClick(icon)}
             onContextMenu={(e) => handleIconContextMenu(icon, e)}
             onDragStart={(e) => handleDragStart(icon, e)}
@@ -189,10 +184,7 @@ export function Desktop() {
       {dragState && (
         <div
           className="fixed pointer-events-none z-[1000] opacity-50"
-          style={{
-            left: dragState.offsetX,
-            top: dragState.offsetY,
-          }}
+          style={{ left: dragState.offsetX, top: dragState.offsetY }}
         >
           <div className="flex flex-col items-center w-[80px]">
             <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-surface border border-border shadow-lg">

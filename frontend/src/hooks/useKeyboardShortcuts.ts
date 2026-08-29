@@ -1,12 +1,15 @@
 import { useEffect, useCallback, useRef, useState } from 'react';
-import { useWindowStore } from '@/stores/windowStore';
-import { useNotificationStore } from '@/stores/notificationStore';
-import { KEYBOARD_SHORTCUTS } from '@shared/constants';
-import type { KeyboardShortcut } from '@shared/types';
 
 interface ShortcutHandler {
-  (shortcut: KeyboardShortcut): void;
+  (shortcut: { id: string; keys: string[]; description: string; action: string; global: boolean }): void;
 }
+
+const KEYBOARD_SHORTCUTS = [
+  { id: 'global-search', keys: ['Meta', 'K'], description: 'Open global search', action: 'global-search', global: true },
+  { id: 'terminal', keys: ['Meta', 'Shift', 'T'], description: 'Open terminal', action: 'open-terminal', global: true },
+  { id: 'close-menu', keys: ['Escape'], description: 'Close menus/dialogs', action: 'close-menu', global: true },
+  { id: 'settings', keys: ['Meta', ','], description: 'Open settings', action: 'open-settings', global: true },
+];
 
 export function useKeyboardShortcuts(handlers: Map<string, ShortcutHandler>) {
   const handlersRef = useRef(handlers);

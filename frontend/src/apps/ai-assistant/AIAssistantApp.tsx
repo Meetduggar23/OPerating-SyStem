@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Send, Plus, Trash2, Settings, Bot, User, Wifi, WifiOff, RefreshCw, Copy, Check } from 'lucide-react';
-import { cn, formatRelativeTime } from '@shared/utils';
+import { Send, Plus, Trash2, Bot, User, Wifi, WifiOff, RefreshCw, Copy, Check } from 'lucide-react';
+import { cn, formatRelativeTime } from '@/utils';
 import { useSettingsStore } from '@/stores/settingsStore';
-import { generateId } from '@shared/constants';
-import type { AIConversation, AIMessage, ChatMessage } from '@shared/types';
+import { generateId } from '@/utils';
+import type { AIMessage } from '@/types';
 
 interface AIAssistantAppProps {
   windowId: string;
@@ -35,7 +35,7 @@ const QUICK_ACTIONS = [
   { label: 'Help me write code', prompt: 'Help me write a simple function in JavaScript' },
 ];
 
-export function AIAssistantApp({ windowId }: AIAssistantAppProps) {
+export function AIAssistantApp({ windowId: _windowId }: AIAssistantAppProps) {
   const { settings } = useSettingsStore();
   const [conversations, setConversations] = useState<Conversation[]>(() => {
     try {

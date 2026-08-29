@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Settings, Palette, Shield, Cpu, Database, Monitor, Bot, Moon, Sun, Check } from 'lucide-react';
-import { cn } from '@shared/utils';
+import { Palette, Shield, Database, Monitor, Bot, Moon, Sun } from 'lucide-react';
+import { cn } from '@/utils';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { useNotificationStore } from '@/stores/notificationStore';
-import { APP_NAME, APP_VERSION, APP_BUILD } from '@shared/constants';
+import { APP_NAME, APP_VERSION, APP_BUILD } from '@/constants';
 
 interface SettingsAppProps {
   windowId: string;
@@ -21,7 +21,7 @@ const SECTIONS: { id: SettingsSection; label: string; icon: React.ComponentType<
 
 const ACCENT_COLORS = ['#AD8B73', '#CEAB93', '#E3CAA5', '#27AE60', '#C0392B', '#F39C12', '#9B59B6', '#3498DB'];
 
-export function SettingsApp({ windowId }: SettingsAppProps) {
+export function SettingsApp({ windowId: _windowId }: SettingsAppProps) {
   const { settings, updateAppearance, updateSettings } = useSettingsStore();
   const { addNotification } = useNotificationStore();
   const [activeSection, setActiveSection] = useState<SettingsSection>('appearance');

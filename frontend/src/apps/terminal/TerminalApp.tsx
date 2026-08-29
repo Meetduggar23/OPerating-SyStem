@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Trash2, Copy, ChevronDown } from 'lucide-react';
-import { cn } from '@shared/utils';
-import type { FileSystemEntry } from '@shared/types';
+import { cn } from '@/utils';
 
 interface TerminalAppProps {
   windowId: string;
@@ -73,9 +71,9 @@ function executeCommand(cmd: string, cwd: string): { output: string; newCwd: str
       const target = args[0] ? resolvePath(cwd, args[0]) : cwd;
       const node = getNode(target);
       if (node && typeof node === 'object') {
-        const entries = Object.keys(node);
+        const entries = Object.keys(node as Record<string, unknown>);
         const output = entries.map((e) => {
-          const isDir = typeof node[e] === 'object';
+          const isDir = typeof (node as Record<string, unknown>)[e] === 'object';
           return isDir ? `\x1b[34m${e}/\x1b[0m` : e;
         }).join('  ');
         return { output, newCwd: cwd, exitCode: 0 };
@@ -132,7 +130,7 @@ function executeCommand(cmd: string, cwd: string): { output: string; newCwd: str
   }
 }
 
-export function TerminalApp({ windowId }: TerminalAppProps) {
+export function TerminalApp({ windowId: _windowId }: TerminalAppProps) {
   const [lines, setLines] = useState<TerminalLine[]>([
     { id: '0', type: 'output', content: 'AI-OS Terminal v1.0.0', timestamp: Date.now() },
     { id: '1', type: 'output', content: 'Type "help" for available commands.\n', timestamp: Date.now() },

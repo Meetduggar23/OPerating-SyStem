@@ -1,9 +1,7 @@
 import { Desktop } from '@/components/desktop/Desktop';
 import { WindowProvider } from '@/components/windows/WindowProvider';
 import { Taskbar } from '@/components/taskbar/Taskbar';
-import { StartMenu } from '@/components/start-menu/StartMenu';
 import { NotificationContainer } from '@/components/notifications/NotificationContainer';
-import { GlobalSearch } from '@/components/widgets/GlobalSearch';
 import { ContextMenuProvider } from '@/components/common/ContextMenu';
 import { BootScreen } from '@/components/desktop/BootScreen';
 import { useBootStore } from '@/stores/bootStore';
@@ -11,22 +9,27 @@ import { useSettingsStore } from '@/stores/settingsStore';
 
 function AppContent() {
   const { isBooted } = useBootStore();
-  const { theme } = useSettingsStore();
+  const { settings } = useSettingsStore();
+  const theme = settings.appearance.theme;
+
+  const resolvedTheme = theme === 'system'
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+    : theme;
 
   if (!isBooted) {
     return <BootScreen />;
   }
 
   return (
-    <div className={`fixed inset-0 ${theme === 'dark' ? 'dark' : ''}`}>
+    <div className={`fixed inset-0 ${resolvedTheme === 'dark' ? 'dark' : ''}`}>
       <WindowProvider>
         <Desktop />
         <Taskbar />
-        <StartMenu />
-        <GlobalSearch />
         <NotificationContainer />
       </WindowProvider>
-      <ContextMenuProvider />
+      <ContextMenuProvider>
+        <div />
+      </ContextMenuProvider>
     </div>
   );
 }

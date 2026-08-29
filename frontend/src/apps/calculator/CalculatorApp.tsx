@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Delete, RotateCcw, History, X } from 'lucide-react';
-import { cn } from '@shared/utils';
+import { History, Trash2 } from 'lucide-react';
+import { cn } from '@/utils';
 
 interface CalculatorAppProps {
   windowId: string;
@@ -80,7 +80,7 @@ function safeEvaluate(expression: string): number {
   return result;
 }
 
-export function CalculatorApp({ windowId }: CalculatorAppProps) {
+export function CalculatorApp({ windowId: _windowId }: CalculatorAppProps) {
   const [display, setDisplay] = useState('0');
   const [expression, setExpression] = useState('');
   const [history, setHistory] = useState<HistoryEntry[]>([]);

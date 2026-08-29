@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { cn } from '@shared/utils';
+import { cn } from '@/utils';
 import { useBootStore } from '@/stores/bootStore';
-import { APP_NAME, APP_VERSION, APP_BUILD } from '@shared/constants';
+import { APP_NAME, APP_VERSION, APP_BUILD } from '@/constants';
 
 const BOOT_STAGES = [
   { progress: 10, stage: 'Initializing kernel...', delay: 300 },

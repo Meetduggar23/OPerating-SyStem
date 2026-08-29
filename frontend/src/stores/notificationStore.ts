@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import type { Notification } from '@shared/types';
-import { generateId, MAX_NOTIFICATIONS } from '@shared/constants';
+import type { Notification } from '@/types';
+import { generateId, MAX_NOTIFICATIONS } from '@/constants';
 
 interface NotificationState {
   notifications: Notification[];

@@ -1,24 +1,17 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Menu, Search, Wifi, Volume2, Battery, Bell, ChevronUp, Moon, Sun, Power, Settings, Monitor, Clock } from 'lucide-react';
-import { cn, formatTime } from '@shared/utils';
+import { Menu, Search, Wifi, Volume2, Battery, Bell, ChevronUp, Moon, Sun, Power, Settings, Monitor } from 'lucide-react';
+import { cn, formatTime } from '@/utils';
 import { useWindowStore } from '@/stores/windowStore';
 import { useAppStore } from '@/stores/appStore';
-import { useSettingsStore } from '@/stores/settingsStore';
+import { useSettingsStore, useTheme } from '@/stores/settingsStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { StartMenu } from '@/components/start-menu/StartMenu';
 import { GlobalSearch } from '@/components/widgets/GlobalSearch';
 import { NotificationPanel } from '@/components/notifications/NotificationPanel';
 import { ContextMenu } from '@/components/common/ContextMenu';
-import { TASKBAR_HEIGHT } from '@shared/constants';
+import { TASKBAR_HEIGHT } from '@/constants';
 
 const PINNED_APPS = ['file-manager', 'terminal', 'notes', 'settings'];
-
-const APP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  'file-manager': () => null,
-  terminal: () => null,
-  notes: () => null,
-  settings: () => null,
-};
 
 import { Folder, Terminal as TerminalIcon, FileText } from 'lucide-react';
 
@@ -30,11 +23,9 @@ const APP_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> 
 };
 
 export function Taskbar() {
-  const { windows, focusWindow, minimizeWindow, getWindowsByApp } = useWindowStore();
-  const { getApp, getPinnedApps, launchApp } = useAppStore();
-  const { settings } = useSettingsStore();
-  const { toggleTheme } = useSettingsStore();
-  const { notifications, removeNotification } = useNotificationStore();
+  const { windows, focusWindow, getWindowsByApp } = useWindowStore();
+  const { getApp, launchApp } = useAppStore();
+  const { notifications } = useNotificationStore();
   const { openWindow } = useWindowStore();
 
   const [startMenuOpen, setStartMenuOpen] = useState(false);
@@ -236,7 +227,6 @@ export function Taskbar() {
       {notificationPanelOpen && (
         <NotificationPanel
           onClose={() => setNotificationPanelOpen(false)}
-          onClearAll={() => useNotificationStore.getState().clearNotifications()}
         />
       )}
       {systemTrayOpen && <SystemTray onClose={() => setSystemTrayOpen(false)} />}
@@ -246,7 +236,7 @@ export function Taskbar() {
 
 function SystemTray({ onClose }: { onClose: () => void }) {
   const { settings } = useSettingsStore();
-  const { toggleTheme } = useSettingsStore();
+  const { toggleTheme } = useTheme();
   const { addNotification } = useNotificationStore();
 
   return (
@@ -259,7 +249,7 @@ function SystemTray({ onClose }: { onClose: () => void }) {
         {
           label: settings.appearance.theme === 'dark' ? 'Light Mode' : 'Dark Mode',
           icon: settings.appearance.theme === 'dark' ? Sun : Moon,
-          onClick: () => { toggleTheme({ theme: settings.appearance.theme === 'dark' ? 'light' : 'dark' }); onClose(); },
+          onClick: () => { toggleTheme(); onClose(); },
         },
         { type: 'separator' },
         {

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { AppMetadata, AppCategory } from '@shared/types';
+import type { AppMetadata, AppCategory } from '@/types';
 
 const systemApps: AppMetadata[] = [
   {

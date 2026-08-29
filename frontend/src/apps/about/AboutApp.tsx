@@ -1,12 +1,10 @@
-import { Monitor, Cpu, HardDrive, MemoryStick, Globe, Code, ExternalLink, Heart } from 'lucide-react';
-import { cn } from '@shared/utils';
-import { APP_NAME, APP_VERSION, APP_BUILD } from '@shared/constants';
+import { Monitor, Cpu, MemoryStick, Globe, Heart } from 'lucide-react';
+import { cn } from '@/utils';
+import { APP_NAME, APP_VERSION, APP_BUILD } from '@/constants';
 
-interface AboutAppProps {
-  windowId: string;
-}
+interface AboutAppProps {}
 
-export function AboutApp({ windowId }: AboutAppProps) {
+export function AboutApp({}: AboutAppProps) {
   return (
     <div className="flex flex-col items-center justify-center h-full p-8 bg-surface overflow-y-auto">
       <div className="max-w-lg w-full space-y-8">
@@ -20,7 +18,7 @@ export function AboutApp({ windowId }: AboutAppProps) {
           <InfoCard icon={Monitor} label="Platform" value={navigator.platform} />
           <InfoCard icon={Globe} label="Browser" value={navigator.userAgent.split(' ').pop() || 'Unknown'} />
           <InfoCard icon={Cpu} label="Cores" value={`${navigator.hardwareConcurrency || 'Unknown'} cores`} />
-          <InfoCard icon={MemoryStick} label="Memory" value={`${(navigator.deviceMemory || 8)} GB`} />
+          <InfoCard icon={MemoryStick} label="Memory" value={`${(navigator as unknown as { deviceMemory?: number }).deviceMemory || 8} GB`} />
         </div>
 
         <div className="p-4 bg-surface border border-border rounded-xl">

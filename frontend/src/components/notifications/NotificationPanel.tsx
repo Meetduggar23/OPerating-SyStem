@@ -1,7 +1,7 @@
 import { Bell, X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react';
-import { cn, formatRelativeTime } from '@shared/utils';
+import { cn, formatRelativeTime } from '@/utils';
 import { useNotificationStore } from '@/stores/notificationStore';
-import type { Notification } from '@shared/types';
+import type { Notification } from '@/types';
 
 const ICONS = {
   success: CheckCircle,
@@ -19,10 +19,9 @@ const COLORS = {
 
 interface NotificationPanelProps {
   onClose: () => void;
-  onClearAll: () => void;
 }
 
-export function NotificationPanel({ onClose, onClearAll }: NotificationPanelProps) {
+export function NotificationPanel({ onClose }: NotificationPanelProps) {
   const { notifications, removeNotification, clearNotifications } = useNotificationStore();
 
   return (

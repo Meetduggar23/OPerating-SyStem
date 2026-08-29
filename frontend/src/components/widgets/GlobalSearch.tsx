@@ -1,9 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, X, Folder, FileText, Terminal, CheckSquare, Calendar, Bot, AppWindow, Settings } from 'lucide-react';
-import { cn, formatRelativeTime } from '@shared/utils';
+import { useState, useRef, useEffect } from 'react';
+import { Search, X, Folder, FileText, CheckSquare, Calendar, Bot, AppWindow } from 'lucide-react';
+import { cn } from '@/utils';
 import { useAppStore } from '@/stores/appStore';
 import { useWindowStore } from '@/stores/windowStore';
-import { useNotificationStore } from '@/stores/notificationStore';
 
 const CATEGORY_ICONS = {
   apps: AppWindow,
@@ -35,12 +34,11 @@ interface SearchResult {
 export function GlobalSearch({ onClose }: { onClose: () => void }) {
   const { searchApps } = useAppStore();
   const { openWindow, getWindowsByApp } = useWindowStore();
-  const { addNotification } = useNotificationStore();
 
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, _setIsOpen] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -96,7 +94,6 @@ export function GlobalSearch({ onClose }: { onClose: () => void }) {
   }, [query]);
 
   const performSearch = (searchQuery: string) => {
-    const lowerQuery = searchQuery.toLowerCase();
     const allResults: SearchResult[] = [];
 
     const apps = searchApps(searchQuery);
@@ -116,15 +113,18 @@ export function GlobalSearch({ onClose }: { onClose: () => void }) {
   const handleResultClick = (result: SearchResult) => {
     switch (result.type) {
       case 'app': {
-        const app = result.data as { id: string; name: string; icon: string };
-        const existingWindows = getWindowsByApp(app.id);
+        const appData = result.data as { id: string; name: string; icon: string };
+        const existingWindows = getWindowsByApp(appData.id);
         if (existingWindows.length > 0) {
           const window = existingWindows[0];
           if (window.isMinimized) useWindowStore.getState().restoreWindow(window.id);
           useWindowStore.getState().focusWindow(window.id);
         } else {
-          useAppStore.getState().launchApp(app.id);
-          openWindow(app);
+          const fullApp = useAppStore.getState().getApp(appData.id);
+          if (fullApp) {
+            useAppStore.getState().launchApp(fullApp.id);
+            openWindow(fullApp);
+          }
         }
         break;
       }
@@ -198,14 +198,14 @@ export function GlobalSearch({ onClose }: { onClose: () => void }) {
               {Object.entries(groupedResults).map(([type, items]) => (
                 <div key={type} className="mb-4">
                   <div className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-text-muted uppercase tracking-wide">
-                    <CATEGORY_ICONS[type as keyof typeof CATEGORY_ICONS]?.className="w-4 h-4" />
+                    {(() => { const Icon = CATEGORY_ICONS[type as keyof typeof CATEGORY_ICONS]; return Icon ? <Icon className="w-4 h-4" /> : null; })()}
                     {CATEGORY_LABELS[type as keyof typeof CATEGORY_LABELS] || type}
                     <span className="ml-auto px-2 py-0.5 bg-surface-active border border-border rounded-full text-[11px]">
                       {items.length}
                     </span>
                   </div>
                   <div className="divide-y divide-border">
-                    {items.map((result, index) => {
+                    {items.map((result, _index) => {
                       const globalIndex = results.indexOf(result);
                       const isSelected = globalIndex === selectedIndex;
                       return (

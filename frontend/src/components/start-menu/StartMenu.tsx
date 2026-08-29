@@ -1,13 +1,13 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Search, Power, Settings, Moon, Sun, RefreshCw, X, Clock, Grid, Download, Lock, Pin } from 'lucide-react';
-import { cn } from '@shared/utils';
+import { Search, Power, Settings, Moon, Sun, RefreshCw, Clock, Grid, Download, Lock, Pin } from 'lucide-react';
+import { cn } from '@/utils';
 import { useAppStore } from '@/stores/appStore';
-import { useSettingsStore } from '@/stores/settingsStore';
+import { useSettingsStore, useTheme } from '@/stores/settingsStore';
 import { useWindowStore } from '@/stores/windowStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { ContextMenu } from '@/components/common/ContextMenu';
-import { TASKBAR_HEIGHT } from '@shared/constants';
-import type { AppMetadata, AppCategory } from '@shared/types';
+import { TASKBAR_HEIGHT } from '@/constants';
+import type { AppMetadata, AppCategory } from '@/types';
 
 const CATEGORIES: { id: AppCategory | 'all' | 'pinned' | 'recent'; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
   { id: 'pinned', label: 'Pinned', icon: Pin },
@@ -20,20 +20,6 @@ const CATEGORIES: { id: AppCategory | 'all' | 'pinned' | 'recent'; label: string
 ];
 
 const PINNED_APPS = ['file-manager', 'terminal', 'notes', 'settings'];
-
-const APP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
-  'file-manager': () => null,
-  terminal: () => null,
-  notes: () => null,
-  calculator: () => null,
-  calendar: () => null,
-  'task-manager': () => null,
-  'app-store': () => null,
-  settings: () => null,
-  'ai-assistant': () => null,
-  'system-monitor': () => null,
-  about: () => null,
-};
 
 import { Folder, Terminal as TerminalIcon, FileText, Calculator, Calendar, CheckSquare, Store, Bot, Activity, Info } from 'lucide-react';
 
@@ -54,7 +40,7 @@ const APP_ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> 
 export function StartMenu({ onClose }: { onClose: () => void }) {
   const { apps, getPinnedApps, getRecentApps, searchApps, launchApp, pinApp, unpinApp } = useAppStore();
   const { settings } = useSettingsStore();
-  const { toggleTheme } = useSettingsStore();
+  const { toggleTheme } = useTheme();
   const { openWindow, getWindowsByApp } = useWindowStore();
   const { addNotification } = useNotificationStore();
 
@@ -181,7 +167,7 @@ export function StartMenu({ onClose }: { onClose: () => void }) {
             <div className="flex items-center gap-2 pt-2 border-t border-border">
               <button
                 className="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors hover:bg-surface-hover"
-                onClick={() => toggleTheme({ theme: settings.appearance.theme === 'dark' ? 'light' : 'dark' })}
+                onClick={() => toggleTheme()}
               >
                 {settings.appearance.theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                 <span>{settings.appearance.theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>

@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react';
-import { Plus, Search, Check, Trash2, Edit3, X, Clock, AlertTriangle, CheckSquare, Filter, Calendar } from 'lucide-react';
-import { cn, formatRelativeTime } from '@shared/utils';
-import { generateId } from '@shared/constants';
-import type { Task, TaskPriority } from '@shared/types';
+import { useState } from 'react';
+import { Plus, Search, Check, Trash2, Edit3, X, Clock, AlertTriangle, CheckSquare, Calendar } from 'lucide-react';
+import { cn } from '@/utils';
+import { generateId } from '@/utils';
+import type { Task, TaskPriority } from '@/types';
 
 interface TaskManagerAppProps {
   windowId: string;
@@ -16,14 +16,14 @@ const PRIORITY_CONFIG: Record<TaskPriority, { label: string; color: string; icon
 };
 
 const DEFAULT_TASKS: Task[] = [
-  { id: '1', title: 'Review pull requests', description: 'Check and approve pending PRs', completed: false, priority: 'high', dueDate: Date.now() + 86400000, category: 'Work', createdAt: Date.now() - 86400000 * 3, updatedAt: Date.now() - 86400000 },
-  { id: '2', title: 'Update documentation', description: 'Write API docs for new endpoints', completed: false, priority: 'medium', dueDate: Date.now() + 86400000 * 5, category: 'Work', createdAt: Date.now() - 86400000 * 2, updatedAt: Date.now() - 86400000 },
-  { id: '3', title: 'Buy groceries', description: 'Milk, eggs, bread, vegetables', completed: true, priority: 'low', dueDate: Date.now() - 86400000, category: 'Personal', createdAt: Date.now() - 86400000 * 4, updatedAt: Date.now(), completedAt: Date.now() },
-  { id: '4', title: 'Fix login bug', description: 'Users unable to login with SSO', completed: false, priority: 'urgent', dueDate: Date.now(), category: 'Work', createdAt: Date.now() - 86400000, updatedAt: Date.now() },
-  { id: '5', title: 'Read chapter 5', description: 'Continue reading design patterns book', completed: false, priority: 'low', dueDate: Date.now() + 86400000 * 14, category: 'Personal', createdAt: Date.now() - 86400000 * 7, updatedAt: Date.now() - 86400000 * 2 },
+  { id: '1', title: 'Review pull requests', description: 'Check and approve pending PRs', completed: false, priority: 'high', dueDate: Date.now() + 86400000, categoryId: 'work', createdAt: Date.now() - 86400000 * 3, updatedAt: Date.now() - 86400000 },
+  { id: '2', title: 'Update documentation', description: 'Write API docs for new endpoints', completed: false, priority: 'medium', dueDate: Date.now() + 86400000 * 5, categoryId: 'work', createdAt: Date.now() - 86400000 * 2, updatedAt: Date.now() - 86400000 },
+  { id: '3', title: 'Buy groceries', description: 'Milk, eggs, bread, vegetables', completed: true, priority: 'low', dueDate: Date.now() - 86400000, categoryId: 'personal', createdAt: Date.now() - 86400000 * 4, updatedAt: Date.now(), completedAt: Date.now() },
+  { id: '4', title: 'Fix login bug', description: 'Users unable to login with SSO', completed: false, priority: 'urgent', dueDate: Date.now(), categoryId: 'work', createdAt: Date.now() - 86400000, updatedAt: Date.now() },
+  { id: '5', title: 'Read chapter 5', description: 'Continue reading design patterns book', completed: false, priority: 'low', dueDate: Date.now() + 86400000 * 14, categoryId: 'personal', createdAt: Date.now() - 86400000 * 7, updatedAt: Date.now() - 86400000 * 2 },
 ];
 
-export function TaskManagerApp({ windowId }: TaskManagerAppProps) {
+export function TaskManagerApp({ windowId: _windowId }: TaskManagerAppProps) {
   const [tasks, setTasks] = useState<Task[]>(() => {
     try {
       const stored = localStorage.getItem('ai-os-tasks');
@@ -78,7 +78,7 @@ export function TaskManagerApp({ windowId }: TaskManagerAppProps) {
     setFormTitle(task.title); setFormDescription(task.description);
     setFormPriority(task.priority);
     setFormDueDate(task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '');
-    setFormCategory(task.category || '');
+    setFormCategory(task.categoryId || '');
     setEditingTask(task);
     setShowForm(true);
   };
@@ -86,9 +86,9 @@ export function TaskManagerApp({ windowId }: TaskManagerAppProps) {
   const saveTask = () => {
     if (!formTitle.trim()) return;
     if (editingTask) {
-      saveTasks(tasks.map((t) => t.id === editingTask.id ? { ...t, title: formTitle, description: formDescription, priority: formPriority, dueDate: formDueDate ? new Date(formDueDate).getTime() : undefined, category: formCategory || undefined, updatedAt: Date.now() } : t));
+      saveTasks(tasks.map((t) => t.id === editingTask.id ? { ...t, title: formTitle, description: formDescription, priority: formPriority, dueDate: formDueDate ? new Date(formDueDate).getTime() : undefined, categoryId: formCategory || undefined, updatedAt: Date.now() } : t));
     } else {
-      const newTask: Task = { id: generateId(), title: formTitle, description: formDescription, completed: false, priority: formPriority, dueDate: formDueDate ? new Date(formDueDate).getTime() : undefined, category: formCategory || undefined, createdAt: Date.now(), updatedAt: Date.now() };
+      const newTask: Task = { id: generateId(), title: formTitle, description: formDescription, completed: false, priority: formPriority, dueDate: formDueDate ? new Date(formDueDate).getTime() : undefined, categoryId: formCategory || undefined, createdAt: Date.now(), updatedAt: Date.now() };
       saveTasks([newTask, ...tasks]);
     }
     setShowForm(false);
@@ -165,7 +165,7 @@ export function TaskManagerApp({ windowId }: TaskManagerAppProps) {
                     <div className="flex items-center gap-2 mt-2">
                       <span className={cn('text-[10px] font-medium flex items-center gap-1', P.color)}><P.icon className="w-3 h-3" />{P.label}</span>
                       {task.dueDate && <span className={cn('text-[10px] flex items-center gap-1', isOverdue ? 'text-danger' : 'text-text-muted')}><Calendar className="w-3 h-3" />{new Date(task.dueDate).toLocaleDateString()}</span>}
-                      {task.category && <span className="text-[10px] px-1.5 py-0.5 bg-surface-active border border-border rounded-full text-text-muted">{task.category}</span>}
+                      {task.categoryId && <span className="text-[10px] px-1.5 py-0.5 bg-surface-active border border-border rounded-full text-text-muted">{task.categoryId}</span>}
                     </div>
                   </div>
                   <div className="flex items-center gap-1">
