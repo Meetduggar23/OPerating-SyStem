@@ -122,5 +122,3 @@ function AppRenderer({ appId, windowId }: { appId: string; windowId: string }) {
 
   return <AppComponent windowId={windowId} />;
 }
-
-import { useEffect, useState } from 'react';
